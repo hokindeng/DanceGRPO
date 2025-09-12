@@ -174,7 +174,7 @@ How to debug:
 
 ## Training Acceleration
 1. You can reduce the sampling steps, resolution, or timestep selection ratio.
-2. The outstanding follow-up works such as [MixGRPO](https://arxiv.org/abs/2507.21802) and [BranchGRPO](https://arxiv.org/abs/2509.06040) are also working on training acceleration.
+2. The outstanding follow-up works such as [MixGRPO](https://arxiv.org/abs/2507.21802) and [BranchGRPO](https://arxiv.org/abs/2509.06040) are also working on training acceleration. [SRPO](https://github.com/Tencent-Hunyuan/SRPO) also tries to adopt differentiable reward models to accelerate the training.
 
 
 ## Acknowledgement
