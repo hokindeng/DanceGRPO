@@ -349,7 +349,7 @@ def load_text_encoder(model_type, pretrained_model_name_or_path, device):
     if model_type == "mochi":
         text_encoder = MochiTextEncoderWrapper(pretrained_model_name_or_path,
                                                device)
-    elif model_type == "hunyuan" or "hunyuan_hf":
+    elif model_type == "hunyuan" or model_type == "hunyuan_hf":
         text_encoder = HunyuanTextEncoderWrapper(pretrained_model_name_or_path,
                                                  device)
     else:
