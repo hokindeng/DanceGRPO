@@ -182,20 +182,11 @@ How to debug:
 2. Please refer to the community extensions&applications.
 
 ## Community Extensions&Applications:
-We want to express our deep gratitude to the community applications and extensions:
-1. [MixGRPO](https://arxiv.org/abs/2507.21802) adopts a mix ode-sde paradigm to accelerate the training. [2025.7]
-2. [Pref-GRPO](https://arxiv.org/pdf/2508.20751) discusses how to avoid reward hacking. [2025.8]
-3. [FlowCPS](https://arxiv.org/abs/2509.05952) provides a better SDE for RLHF training. [2025.9]
-4. [SRPO](https://github.com/Tencent-Hunyuan/SRPO) tries to adopt differentiable reward models to accelerate the training. [2025.9]
-5. [BranchGRPO](https://arxiv.org/abs/2509.06040) utilizes a tree structure to develop a better GRPO training system. [2025.9]
-6. [Dynamic-TreeRPO](https://www.arxiv.org/abs/2509.23352) implements the sliding-window sampling strategy as a tree-structured search method. [2025.9]
-7. [RLIR](https://arxiv.org/abs/2509.23958) extends the GRPO-style paradigm to world model. [2025.9]
-8. [PCPO](https://arxiv.org/abs/2509.25774) enforces proportional credit assignment through a stable objective reformulation and a principled reweighting of timesteps. [2025.9]
-9. [Self-forcing++](https://arxiv.org/abs/2510.02283) extends the GRPO-style paradigm to long videos. [2025.10]
-10. [G2RPO](https://arxiv.org/abs/2510.01982) achieves precise and comprehensive reward assessments of sampling directions in reinforcement learning of flow models. [2025.10]
-
-
-
+We extend our deep gratitude to the community for their applications and extensions to diffusion/flow RLHF:
+1. 2025.7: [MixGRPO](https://arxiv.org/abs/2507.21802)
+2. 2025.8: [Pref-GRPO](https://arxiv.org/pdf/2508.20751), [TempFlow-GRPO](https://arxiv.org/abs/2508.04324), [HPSv3](https://arxiv.org/abs/2508.03789)
+3. 2025.9: [FlowCPS](https://arxiv.org/abs/2509.05952), [SRPO](https://github.com/Tencent-Hunyuan/SRPO), [BranchGRPO](https://arxiv.org/abs/2509.06040), [Dynamic-TreeRPO](https://www.arxiv.org/abs/2509.23352), [RLIR](https://arxiv.org/abs/2509.23958), [PCPO](https://arxiv.org/abs/2509.25774), [DiffusionNFT](https://arxiv.org/abs/2509.16117), [EditScore](https://arxiv.org/pdf/2509.23909), [AWM](https://arxiv.org/abs/2509.25050)
+4. 2025.10: [Self-forcing++](https://arxiv.org/abs/2510.02283), [G2RPO](https://arxiv.org/abs/2510.01982)
 
 ## Acknowledgement
 We learned and reused code from the following projects:
