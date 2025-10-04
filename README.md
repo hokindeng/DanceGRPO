@@ -179,14 +179,10 @@ How to debug:
 
 ## Training Acceleration
 1. You can reduce the sampling steps, resolution, or timestep selection ratio.
-2. Please refer to the community extensions&applications.
+2. The Mix ODE-SDE implementation can greatly acclerate the training, such as [MixGRPO](https://arxiv.org/abs/2507.21802).
 
-## Community Extensions&Applications:
-We extend our deep gratitude to the community for their applications and extensions to diffusion/flow RLHF:
-1. 2025.7: [MixGRPO](https://arxiv.org/abs/2507.21802)
-2. 2025.8: [Pref-GRPO](https://arxiv.org/pdf/2508.20751), [TempFlow-GRPO](https://arxiv.org/abs/2508.04324), [HPSv3](https://arxiv.org/abs/2508.03789)
-3. 2025.9: [FlowCPS](https://arxiv.org/abs/2509.05952), [SRPO](https://github.com/Tencent-Hunyuan/SRPO), [BranchGRPO](https://arxiv.org/abs/2509.06040), [Dynamic-TreeRPO](https://www.arxiv.org/abs/2509.23352), [RLIR](https://arxiv.org/abs/2509.23958), [PCPO](https://arxiv.org/abs/2509.25774), [DiffusionNFT](https://arxiv.org/abs/2509.16117), [EditScore](https://arxiv.org/pdf/2509.23909), [AWM](https://arxiv.org/abs/2509.25050)
-4. 2025.10: [Self-forcing++](https://arxiv.org/abs/2510.02283), [G2RPO](https://arxiv.org/abs/2510.01982)
+More improvements on diffusion/flow RL can be found [here](https://github.com/XueZeyue/Awesome-Visual-Generation-Alignment-Survey?tab=readme-ov-file#reinforcement-learning-based-rlhf).
+
 
 ## Acknowledgement
 We learned and reused code from the following projects:
@@ -195,6 +191,8 @@ We learned and reused code from the following projects:
 - [DDPO-Pytorch](https://github.com/kvablack/ddpo-pytorch)
 
 We thank the authors for their contributions to the community!
+
+We actively maintain a curated list of the latest research papers on visual generation alignment. Explore the collection [here](https://github.com/XueZeyue/Awesome-Visual-Generation-Alignment-Survey).
 
 ## Citation
 If you use DanceGRPO for your research, please cite our paper:
