@@ -20,6 +20,7 @@ DanceGRPO has the following features:
 - Support SkyReels-I2V
 - Support Qwen-Image
 - Support Qwen-Image-Edit
+- Support Wan-2.1
 
 ## Updates
 
@@ -28,6 +29,7 @@ DanceGRPO has the following features:
 - __[2025.07.03]__: 🔥 We released the training scripts of HunyuanVideo!
 - __[2025.08.30]__: 🔥 We released the training scripts of SkyReels-I2V!
 - __[2025.09.04]__: 🔥 We released the training scripts of Qwen-Image&Qwen-Image-Edit!
+- __[2025.10.16]__: 🔥 We released the training scripts of Wan-2.1!
 
 We have shared this work at many research labs, and the example slide can be found [here](https://github.com/XueZeyue/xuezeyue.github.io/blob/main/_talks/dancegrpo.pdf). The trained FLUX checkpoints can be found [here](https://huggingface.co/xzyhku/flux_hpsv2.1_dancegrpo).
 
@@ -119,6 +121,18 @@ The HPS-v2.1 reward will increase from ~0.23 to ~0.27 with about 150 iterations.
 bash scripts/preprocess/preprocess_qwen_image_edit_rl_embeddings.sh
 # for Qwen-Image-Edit, using the following script for training with 8 H800 GPUs,
 bash scripts/finetune/finetune_qwenimage_edit_grpo.sh   
+```
+</details>
+
+<details>
+<summary><strong>About Wan-2.1</strong></summary>
+
+Download the Wan-2.1 [checkpoints](https://huggingface.co/Wan-AI/Wan2.1-T2V-1.3B-Diffusers/tree/main) to  ```"./data/Wan2.1-T2V-1.3B"```. We regard it as an image generation model and also use HPS-v2.1 to train the model. Wan-2.1 needs more iterations to converge.
+```bash
+# for Wan-2.1, preprocessing with 8 H800 GPUs
+bash scripts/preprocess/preprocess_wan_2_1_rl_embeddings.sh
+# for Wan-2.1, using the following script for training with 8 H800 GPUs,
+bash scripts/finetune/finetune_wan_2_1_grpo.sh 
 ```
 </details>
 
