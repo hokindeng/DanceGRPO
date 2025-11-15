@@ -180,22 +180,22 @@ flowchart LR
     end
     
     subgraph "Batch Structure"
-        Batch["Batch Dict:<br/>{<br/>  encoder_hidden_states: B×L×D<br/>  encoder_attention_mask: B×L<br/>  caption: List[str]<br/>}"]
+        Batch[Batch Dict:<br/>encoder_hidden_states: BxLxD<br/>encoder_attention_mask: BxL<br/>caption: List of strings]
     end
     
     subgraph "Rollout Outputs"
-        Latents["all_latents:<br/>Tensor B×T+1×C×H×W<br/>All intermediate states"]
-        LogProbs["all_log_probs:<br/>Tensor B×T<br/>Log π at each step"]
-        Videos["videos:<br/>List of arrays<br/>Decoded videos"]
-        Rewards["rewards:<br/>Tensor B<br/>VQ and MQ scores"]
+        Latents[all_latents:<br/>Tensor Bx T+1 xCxHxW<br/>All intermediate states]
+        LogProbs[all_log_probs:<br/>Tensor BxT<br/>Log π at each step]
+        Videos[videos:<br/>List of arrays<br/>Decoded videos]
+        Rewards[rewards:<br/>Tensor B<br/>VQ and MQ scores]
     end
     
     subgraph "Training Tensors"
-        Samples["samples dict:<br/>{<br/>  timesteps: B×T<br/>  latents: B×T×C×H×W<br/>  next_latents: B×T×C×H×W<br/>  log_probs: B×T<br/>  vq_advantages: B<br/>  mq_advantages: B<br/>  encoder_hidden_states: B×L×D<br/>  encoder_attention_mask: B×L<br/>}"]
+        Samples[samples dict:<br/>timesteps: BxT<br/>latents: BxTxCxHxW<br/>next_latents: BxTxCxHxW<br/>log_probs: BxT<br/>vq_advantages: B<br/>mq_advantages: B<br/>encoder_hidden_states: BxLxD<br/>encoder_attention_mask: BxL]
     end
     
     subgraph "Filtered Tensors"
-        Selected["selected_samples:<br/>Same structure<br/>but batch_size = bestofn<br/>Contains top-k and bottom-k"]
+        Selected[selected_samples:<br/>Same structure<br/>but batch_size = bestofn<br/>Contains top-k and bottom-k]
     end
     
     JSON --> Embed
@@ -219,36 +219,36 @@ flowchart LR
 ```mermaid
 graph TB
     subgraph "GPU Memory Layout (per GPU)"
-        subgraph "Model Shards (FSDP)"
-            Shard1[Transformer Shard 1/N<br/>Parameters + Gradients<br/>~10-30 GB]
-            Shard2[Transformer Shard 2/N]
-            ShardN[Transformer Shard N/N]
+        subgraph "Model Shards FSDP"
+            Shard1[Transformer Shard 1 of N<br/>Parameters + Gradients<br/>about 10-30 GB]
+            Shard2[Transformer Shard 2 of N]
+            ShardN[Transformer Shard N of N]
         end
         
         subgraph "Activation Memory"
-            Forward[Forward Activations<br/>Latents: B×T×C×H×W<br/>~5-20 GB]
-            Backward[Backward Gradients<br/>~5-20 GB]
+            Forward[Forward Activations<br/>Latents: BxTxCxHxW<br/>about 5-20 GB]
+            Backward[Backward Gradients<br/>about 5-20 GB]
         end
         
         subgraph "Optimizer States"
-            Adam1[AdamW State Shard<br/>First Moment<br/>~10-30 GB]
-            Adam2[AdamW State Shard<br/>Second Moment<br/>~10-30 GB]
+            Adam1[AdamW State Shard<br/>First Moment<br/>about 10-30 GB]
+            Adam2[AdamW State Shard<br/>Second Moment<br/>about 10-30 GB]
         end
         
         subgraph "Temporary Buffers"
-            AllGather[All-Gather Buffer<br/>Full model params<br/>~2-5 GB temporary]
-            VideoBuffer[Decoded Videos<br/>~2-10 GB temporary]
+            AllGather[All-Gather Buffer<br/>Full model params<br/>about 2-5 GB temporary]
+            VideoBuffer[Decoded Videos<br/>about 2-10 GB temporary]
         end
     end
     
     subgraph "CPU Memory"
-        EMA[EMA Weights Rank 0<br/>Full model copy<br/>~20-50 GB]
-        Checkpoint[Checkpoint Buffer<br/>State dict<br/>~20-50 GB]
+        EMA[EMA Weights Rank 0<br/>Full model copy<br/>about 20-50 GB]
+        Checkpoint[Checkpoint Buffer<br/>State dict<br/>about 20-50 GB]
     end
     
     subgraph "Disk I/O"
-        Videos[Videos on Disk<br/>./videos/*.mp4<br/>~1-5 GB]
-        Ckpts[Checkpoints<br/>./output_dir/checkpoint-*<br/>~20-50 GB per ckpt]
+        Videos[Videos on Disk<br/>./videos/video.mp4<br/>about 1-5 GB]
+        Ckpts[Checkpoints<br/>./output_dir/checkpoints<br/>about 20-50 GB per ckpt]
         Logs[Logs<br/>reward.txt, vq_reward.txt]
     end
     
@@ -291,19 +291,19 @@ graph TB
     Node2 -.->|"NCCL All-Reduce"| NodeN
     
     subgraph "Node 1 Detail"
-        subgraph "Rank 0 (GPU 0)"
+        subgraph "Rank 0 GPU 0"
             MP0[Main Process<br/>torch.distributed]
             DW0[DataLoader Workers<br/>num_workers threads]
             MP0 --> DW0
         end
         
-        subgraph "Rank 1 (GPU 1)"
+        subgraph "Rank 1 GPU 1"
             MP1[Main Process]
             DW1[DataLoader Workers]
             MP1 --> DW1
         end
         
-        subgraph "Rank 7 (GPU 7)"
+        subgraph "Rank 7 GPU 7"
             MP7[Main Process]
             DW7[DataLoader Workers]
             MP7 --> DW7
@@ -311,8 +311,8 @@ graph TB
     end
     
     subgraph "Sequence Parallel Groups"
-        SP1[SP Group 1<br/>Ranks 0,1,2,3]
-        SP2[SP Group 2<br/>Ranks 4,5,6,7]
+        SP1[SP Group 1<br/>Ranks 0 1 2 3]
+        SP2[SP Group 2<br/>Ranks 4 5 6 7]
     end
     
     MP0 -.->|"Sequence Parallel"| MP1
@@ -352,8 +352,8 @@ stateDiagram-v2
     LoadCheckpoint --> DataLoading
     FreshStart --> DataLoading
     
-    DataLoading --> GroupExpansion: use_group=True
-    DataLoading --> RolloutPhase: use_group=False
+    DataLoading --> GroupExpansion: use group True
+    DataLoading --> RolloutPhase: use group False
     GroupExpansion --> RolloutPhase
     
     RolloutPhase --> NoiseInit: for each sample
@@ -384,27 +384,27 @@ stateDiagram-v2
     GradAccum --> RecomputeLogProb: yes
     GradAccum --> OptimizerStep: no
     
-    OptimizerStep --> EMAUpdate: use_ema=True
-    OptimizerStep --> CheckSavepoint: use_ema=False
+    OptimizerStep --> EMAUpdate: use ema True
+    OptimizerStep --> CheckSavepoint: use ema False
     EMAUpdate --> CheckSavepoint
     
-    CheckSavepoint --> SaveCheckpoint: step % save_steps == 0
+    CheckSavepoint --> SaveCheckpoint: step mod save_steps equals 0
     CheckSavepoint --> LogMetrics: otherwise
     SaveCheckpoint --> LogMetrics
     
     LogMetrics --> CheckDone: step < max_steps?
-    CheckDone --> DataLoading: yes
-    CheckDone --> Finalize: no
+    CheckDone --> DataLoading: continue
+    CheckDone --> Finalize: done
     
     Finalize --> [*]
     
     note right of RolloutPhase
-        Model in eval() mode
-        torch.no_grad()
+        Model in eval mode
+        torch no_grad
     end note
     
     note right of PolicyTraining
-        Model in train() mode
+        Model in train mode
         Gradients enabled
     end note
     
@@ -437,8 +437,8 @@ graph TB
     end
     
     subgraph "Runtime Outputs"
-        Videos[videos/<br/>Generated videos per rank<br/>hunyuan_{rank}_{idx}.mp4]
-        Checkpoints[output_dir/<br/>checkpoint-{step}-{epoch}/]
+        Videos[videos/<br/>Generated videos per rank<br/>hunyuan_rank_idx.mp4]
+        Checkpoints[output_dir/<br/>checkpoint-step-epoch/]
         Logs[Logs<br/>reward.txt, vq_reward.txt, mq_reward.txt]
     end
     
