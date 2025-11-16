@@ -1,4 +1,40 @@
 fastvideo.egg-info/
 fastvideo_env/
 
+# Model data and checkpoints (large files)
+data/
+videoalign_ckpt/
+hps_ckpt/
+Qwen2-VL-2B-Instruct/
+
+# Training outputs
+videos/
+images/
+*.mp4
+*.png
+*.jpg
+reward.txt
+vq_reward.txt
+mq_reward.txt
+hps_reward.txt
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
 

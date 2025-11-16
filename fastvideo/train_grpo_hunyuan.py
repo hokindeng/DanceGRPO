@@ -272,6 +272,9 @@ def sample_reference_model(
                     mq_reward = torch.tensor(reward[0]['MQ']).to(device)
                     all_mq_rewards.append(mq_reward.unsqueeze(0))
             except Exception as e:
+                print(f"[Rank {rank}] VideoAlign ERROR: {type(e).__name__}: {str(e)}")
+                import traceback
+                traceback.print_exc()
                 vq_reward = torch.tensor(-1.0).to(device)
                 all_vq_rewards.append(vq_reward.unsqueeze(0))
                 mq_reward = torch.tensor(-1.0).to(device)
@@ -522,7 +525,9 @@ def main(args):
         from fastvideo.models.videoalign.inference import VideoVLMRewardInference
         load_from_pretrained = "./videoalign_ckpt"
         dtype = torch.bfloat16
+        main_print(f"[Rank {rank}] Loading VideoAlign from {load_from_pretrained}...")
         inferencer = VideoVLMRewardInference(load_from_pretrained, device=f'cuda:{device}', dtype=dtype)
+        main_print(f"[Rank {rank}] VideoAlign loaded successfully!")
 
     #reward_model = 
     main_print(f"--> loading model from {args.pretrained_model_name_or_path}")
