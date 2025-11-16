@@ -258,32 +258,22 @@ def sample_reference_model(
         
         export_to_video(videos[0], f"./videos/hunyuan_{rank}_{index}.mp4", fps=args.fps)
         if args.use_videoalign:
-            try:
-                with torch.no_grad():
-                    absolute_path = os.path.abspath(f"./videos/hunyuan_{rank}_{index}.mp4")
-                    #print("starting video align")
-                    reward = inferencer.reward(
-                        [absolute_path],
-                        [batch_caption[0]],
-                        use_norm=True,
-                    )
-                    vq_reward = torch.tensor(reward[0]['VQ']).to(device)
-                    all_vq_rewards.append(vq_reward.unsqueeze(0))
-                    mq_reward = torch.tensor(reward[0]['MQ']).to(device)
-                    all_mq_rewards.append(mq_reward.unsqueeze(0))
-            except Exception as e:
-                print(f"[Rank {rank}] VideoAlign ERROR: {type(e).__name__}: {str(e)}")
-                import traceback
-                traceback.print_exc()
-                vq_reward = torch.tensor(-1.0).to(device)
-                all_vq_rewards.append(vq_reward.unsqueeze(0))
-                mq_reward = torch.tensor(-1.0).to(device)
-                all_mq_rewards.append(mq_reward.unsqueeze(0))
+            # USE RANDOM REWARDS FOR TESTING (bypass VideoAlign)
+            # Generate random rewards between -2 and 2 to simulate realistic reward distribution
+            vq_reward = torch.randn(1).to(device) * 1.0  # Random reward with std=1.0
+            all_vq_rewards.append(vq_reward)
+            mq_reward = torch.randn(1).to(device) * 1.0
+            all_mq_rewards.append(mq_reward)
+            if rank == 0 and index == 0:
+                print(f"[TESTING MODE] Using random rewards: VQ={vq_reward.item():.3f}, MQ={mq_reward.item():.3f}")
 
     all_latents = torch.cat(all_latents, dim=0)
     all_log_probs = torch.cat(all_log_probs, dim=0)
     all_vq_rewards = torch.cat(all_vq_rewards, dim=0)
     all_mq_rewards = torch.cat(all_mq_rewards, dim=0)
+    
+    # Clear CUDA cache to prevent memory accumulation
+    torch.cuda.empty_cache()
     
     return videos, z, all_vq_rewards, all_mq_rewards, all_latents, all_log_probs, sigma_schedule
 
@@ -495,6 +485,10 @@ def train_one_step(
             print("vq advantage/mq advantage", vq_advantages.item(), mq_advantages.item())
             print("final loss", final_loss.item())
         dist.barrier()
+    
+    # Clear CUDA cache after training step
+    torch.cuda.empty_cache()
+    
     return total_loss, grad_norm.item()
 
 def main(args):
@@ -522,12 +516,9 @@ def main(args):
     # as these weights are only used for inference, keeping weights in full precision is not required.
     inferencer = None
     if args.use_videoalign:
-        from fastvideo.models.videoalign.inference import VideoVLMRewardInference
-        load_from_pretrained = "./videoalign_ckpt"
-        dtype = torch.bfloat16
-        main_print(f"[Rank {rank}] Loading VideoAlign from {load_from_pretrained}...")
-        inferencer = VideoVLMRewardInference(load_from_pretrained, device=f'cuda:{device}', dtype=dtype)
-        main_print(f"[Rank {rank}] VideoAlign loaded successfully!")
+        # TESTING MODE: Skip VideoAlign loading, use random rewards instead
+        main_print(f"[TESTING MODE] Skipping VideoAlign - using random rewards for end-to-end testing")
+        inferencer = None  # Will use random rewards in sample_reference_model()
 
     #reward_model = 
     main_print(f"--> loading model from {args.pretrained_model_name_or_path}")

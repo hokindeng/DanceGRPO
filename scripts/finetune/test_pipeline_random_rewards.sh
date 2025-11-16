@@ -1,33 +1,21 @@
 #!/bin/bash
 
-# Optimized HunyuanVideo GRPO training for 6x H100 80GB GPUs
-# This script reduces memory usage while maintaining training quality
+# Quick test to verify GRPO pipeline works end-to-end with random rewards
+# This will confirm if OOM/crash was caused by VideoAlign
 
 export WANDB_DISABLED=true
 export WANDB_BASE_URL="https://api.wandb.ai"
 export WANDB_MODE=online
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
-export TORCH_DISTRIBUTED_DEBUG=DETAIL
-export TORCHELASTIC_ERROR_FILE=/tmp/torch_error.log
-
-# Install dependencies
-pip3 install moviepy
-mkdir -p videos
-pip3 install huggingface_hub==0.24.0 
-pip3 install tf-keras==2.19.0
-pip3 install trl==0.16.0
-pip3 install transformers==4.46.1
-pip3 install protobuf==5.29.5
 
 echo "=========================================="
-echo "HunyuanVideo GRPO Training - 6 GPU Config"
+echo "GRPO Pipeline Test - Random Rewards"
 echo "=========================================="
-echo "Hardware: 6x H100 80GB HBM3"
-echo "Video Resolution: 384x384, 49 frames"
-echo "Generations per prompt: 12"
-echo "Expected memory per GPU: ~40-50 GB"
-echo "Expected time per step: ~50-60 seconds"
-echo "Total training time: ~3 hours"
+echo "Testing with:"
+echo "- Resolution: 320x320x45"
+echo "- Generations: 8"
+echo "- Random rewards (no VideoAlign)"
+echo "- 20 steps only (quick test)"
 echo "=========================================="
 
 # Single node, 6 GPUs
@@ -47,7 +35,7 @@ torchrun --nnodes=1 --nproc_per_node=6 \
     --train_sp_batch_size 1 \
     --dataloader_num_workers 2 \
     --gradient_accumulation_steps 12 \
-    --max_train_steps 202 \
+    --max_train_steps 20 \
     --learning_rate 8e-6 \
     --mixed_precision bf16 \
     --checkpointing_steps 50 \
@@ -55,8 +43,8 @@ torchrun --nnodes=1 --nproc_per_node=6 \
     --checkpoints_total_limit 2 \
     --allow_tf32 \
     --cfg 0.0 \
-    --output_dir data/outputs/grpo_hunyuan_6gpu \
-    --tracker_project_name grpo_hunyuan_6gpu \
+    --output_dir data/outputs/grpo_test_random \
+    --tracker_project_name grpo_test_random \
     --h 320 \
     --w 320 \
     --t 45 \
@@ -77,7 +65,7 @@ torchrun --nnodes=1 --nproc_per_node=6 \
     --mq_coef 0.0
 
 echo "=========================================="
-echo "Training Complete!"
-echo "Checkpoints saved to: data/outputs/grpo_hunyuan_6gpu"
+echo "Test Complete!"
+echo "Check vq_reward.txt - rewards should be random (not all -1.0)"
 echo "=========================================="
 
